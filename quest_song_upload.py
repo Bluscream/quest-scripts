@@ -15,6 +15,7 @@ basicConfig(
 )
 from pathlib import Path, PurePosixPath
 local_songfolder = Path(r"G:\Steam\steamapps\common\Beat Saber\Beat Saber_Data\CustomLevels")
+local_songhashfile = local_songfolder / 'hashes.txt'
 remote_songfolder = PurePosixPath("/sdcard/ModData/com.beatgames.beatsaber/Mods/SongLoader/CustomLevels/")
 
 ls_result = []

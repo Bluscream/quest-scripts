@@ -15,6 +15,7 @@ basicConfig(
 )
 from pathlib import Path
 local_songfolder = Path(r"G:\Steam\steamapps\common\Beat Saber\Beat Saber_Data\CustomLevels")
+local_songhashfile = local_songfolder / 'hashes.txt'
 
 def is_song_hashed(song_dir_name):
     return True if match(r'[0-9a-f]{40}', song_dir_name) else False
@@ -44,8 +45,14 @@ def get_song_hash(path: str):
             hash_obj.update(f.read())
     return hash_obj.hexdigest()
 
+local_songhashfile = open(str(local_songhashfile), 'w')
 for song in local_songfolder.iterdir():
-    if not is_song_hashed(song.name):
-        hash = get_song_hash(str(song))
-        info(f"Hashing {song.name} to {hash}")
-        os.rename(song, str(song.parent) + "/" + hash)
+    try:
+        if not is_song_hashed(song.name):
+            hash = get_song_hash(str(song))
+            local_songhashfile.write(f'{hash}=\"{song.name}\"\n')
+            info(f"Hashing {song.name} to {hash}")
+            os.rename(song, str(song.parent) + "/" + hash)
+    except Exception as e:
+        error(f"\"{song.name}\": \"{e.args[0]}\"")
+local_songhashfile.close()
