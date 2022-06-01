@@ -82,7 +82,7 @@ uploaded_songs = ls_by_line(remote_songfolder)
 # exit(0)
 i = 0
 for song in local_songfolder.iterdir():
-    if song.name in uploaded_songs or (is_song_hashed(song.name) and get_song_hash(str(song)) == song.name): i += 1
+    if song.name in uploaded_songs or (is_song_hashed(song.name) and get_song_hash(str(song)) in uploaded_songs): i += 1
     else: songs.append(song)
 l = len(songs)
 info(f"Found {l} songs to upload (Skipping {i} already uploaded songs)")
