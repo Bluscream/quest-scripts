@@ -4,6 +4,7 @@ from subprocess import check_output
 from time import sleep
 from logging import *
 from json import load
+from shutil import rmtree, copy
 basicConfig(
     level=DEBUG,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -26,14 +27,34 @@ def is_song_hashed(song_dir_name): return True if match(r'[0-9a-f]{40}', song_di
 def get_song_filename(song_dir):
     song_info = get_song_info(get_info_dat(str(song_dir)))
     return f'[BSD] {song_info["_songName"]} - {song_info["_songAuthorName"]}'
+def merge(scr_path, dir_path):
+  files = next(os.walk(scr_path))[2]
+  folders = next(os.walk(scr_path))[1]
+  for file in files: # Copy the files
+    scr_file = scr_path + "/" + file
+    dir_file = dir_path + "/" + file
+    if os.path.exists(dir_file): # Delete the old files if already exist
+      os.remove(dir_file)
+    copy(scr_file, dir_file)
+  for folder in folders: # Merge again with the subdirectories
+    scr_folder = scr_path + "/" + folder
+    dir_folder = dir_path + "/" + folder
+    if not os.path.exists(dir_folder): # Create the subdirectories if dont already exist
+      os.mkdir(dir_folder)
+    merge(scr_folder, dir_folder)
 
-local_songhashfile = open(str(local_songhashfile), 'w')
+local_songhashfile = open(str(local_songhashfile), 'w', encoding="utf-8")
 for song in local_songfolder.iterdir():
     if is_song_hashed(song.name):
         try:
             unhashed_name = get_song_filename(str(song))
             local_songhashfile.write(f'{song.name}=\"{unhashed_name}\"\n')
-            info(f"Unhashing {song.name} to {unhashed_name}")
-            os.rename(song, str(song.parent) + "/" + unhashed_name)
+            info(f"Unhashing {song.name} to {unhashed_name.encode('utf-8')}")
+            dst = f"{str(song.parent)}/{unhashed_name}"
+            try: os.rename(song, dst)
+            except FileExistsError:
+                warning(f"Merging {song.name}")
+                merge(song, dst)
+                # rmtree(song, True)
         except PermissionError as e: print(e)
 local_songhashfile.close()

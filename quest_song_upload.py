@@ -32,12 +32,12 @@ def dump_shell_by_line(connect):
     for index in range(0, 10):
         print("#{}: {}".format(index, file_obj.readline().strip()))
         
-def ls_by_line(path):
-    return check_output(["adb","shell",f"ls \"{path}\""]).decode().splitlines()
+def ls_by_line(path, device):
+    return check_output(["adb","-s",device.serial,"shell",f"ls \"{path}\""]).decode().splitlines()
         
 client = AdbClient(host="127.0.0.1", port=5037)
 device = client.devices()[0]
-
+info("Using device:", device.serial)
 def exec(cmd=""):
     warning(f"Executing: {cmd}")
     device.shell(cmd, handler=dump_shell)
@@ -60,22 +60,19 @@ def get_song_info(song_info_file: str):
         return load(info_dat)
 def get_song_hash(path: str):
     song_info_file = get_info_dat(path)
-    print(song_info_file)
     song_info = get_song_info(song_info_file)
-    print(song_info)
     hash_obj = hashlib.sha1(open(song_info_file, 'rb').read())
     difficulty_files = []
     for beatmapset in song_info['_difficultyBeatmapSets']:
         for beatmap in beatmapset["_difficultyBeatmaps"]:
             difficulty_files.append(path + "/" + beatmap["_beatmapFilename"])
-            print(beatmap["_beatmapFilename"])
     for fname in difficulty_files:
         with open(fname, 'rb') as f:
             hash_obj.update(f.read())
     return hash_obj.hexdigest()
 
 songs = []
-uploaded_songs = ls_by_line(remote_songfolder)
+uploaded_songs = ls_by_line(remote_songfolder, device)
 
 # for song in uploaded_songs:
 #     rm(remote_songfolder / song)
@@ -85,6 +82,7 @@ for song in local_songfolder.iterdir():
     if song.name in uploaded_songs or (is_song_hashed(song.name) and get_song_hash(str(song)) in uploaded_songs): i += 1
     else: songs.append(song)
 l = len(songs)
+
 info(f"Found {l} songs to upload (Skipping {i} already uploaded songs)")
 
 i = 0

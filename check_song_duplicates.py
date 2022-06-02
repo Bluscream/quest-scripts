@@ -1,3 +1,5 @@
+print("start")
+
 from pathlib import Path
 from shutil import rmtree
 from hashlib import md5
@@ -33,10 +35,11 @@ def get_md5(_path: Path):
         return file_hash.hexdigest()
 
 hashes = {}
-
-for child in root.iterdir():
+childs = list(root.iterdir())
+print(len(childs), "childs found")
+for child in childs:
     if not child.is_dir(): continue
-    if child.name.endswith(".FullName"): child.rename(child.parent / child.name.replace(".FullName", ""))
+    # if child.name.endswith(".FullName"): child.rename(child.parent / child.name.replace(".FullName", ""))
     song_file, song_files = get_song_files(child)
     if not song_files:
         print(f"No song file found in {child.name}!")
@@ -60,12 +63,13 @@ for child in root.iterdir():
     # print(f"{child.name} - {song_hash}")
     if not song_hash in hashes.keys(): hashes[song_hash] = []
     hashes[song_hash].append(child)
-
+print(len(hashes), "hashes found")
 for hash, songs in hashes.items():
     if len(songs) > 1:
-        print(f"Duplicate songs found:")
+        print("Duplicate songs found:")
         for song in songs:
             print(f" - {song.name}")
             if not ' ' in song.name:
                 print("Deleting duplicate song without whitespace:", song.name)
-                rmtree(song)
+                # rmtree(song)
+print("end")
