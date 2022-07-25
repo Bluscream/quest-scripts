@@ -37,7 +37,7 @@ def ls_by_line(path, device):
         
 client = AdbClient(host="127.0.0.1", port=5037)
 device = client.devices()[0]
-info("Using device:", device.serial)
+info(f"Using device: {device.serial}")
 def exec(cmd=""):
     warning(f"Executing: {cmd}")
     device.shell(cmd, handler=dump_shell)
@@ -72,6 +72,7 @@ def get_song_hash(path: str):
     return hash_obj.hexdigest()
 
 songs = []
+mkdir(remote_songfolder)
 uploaded_songs = ls_by_line(remote_songfolder, device)
 
 # for song in uploaded_songs:
@@ -101,4 +102,4 @@ for song in songs:
 
 ls_song_folder()
 
-client.remote_disconnect()
+# adclient.remote_disconnect()

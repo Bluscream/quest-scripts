@@ -55,8 +55,8 @@ def create_or_update_playlist(name: str, songs: List[str]):
     # ytm.remove_playlist_items(duplicates[0], pl["tracks"])
     ytm.add_playlist_items(duplicates[0], songs)
 
-create_or_update_playlist("Library Songs", get_song_ids(ytm.get_library_songs(5000)))
-create_or_update_playlist("Liked Songs", get_song_ids(ytm.get_liked_songs(5000)["tracks"]))
+create_or_update_playlist("Library Songs", get_song_ids(ytm.get_library_songs(7500)))
+create_or_update_playlist("Liked Songs", get_song_ids(ytm.get_liked_songs(7500)["tracks"]))
 
 def chunks(l,n): return [l[i:i + n] for i in range(0, len(l), n)]
 _songs_ = len(_songs)

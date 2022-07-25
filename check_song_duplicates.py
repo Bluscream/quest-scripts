@@ -25,6 +25,7 @@ def get_song_files(_path: Path):
     
     song_files[1] += list(_path.glob("*.ogg"))
     song_files[1] += list(_path.glob("*.egg"))
+    song_files[1] += list(_path.glob("*.mp3"))
     return song_files
 
 def get_md5(_path: Path):
@@ -60,6 +61,7 @@ for child in childs:
         continue
     # calculate md5 hash of song_file
     song_hash = get_md5(song_files[0])
+    print(f"Song {child.name} has song file {song_file.name} ({song_hash})")
     # print(f"{child.name} - {song_hash}")
     if not song_hash in hashes.keys(): hashes[song_hash] = []
     hashes[song_hash].append(child)
