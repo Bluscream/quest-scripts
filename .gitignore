@@ -1,4 +1,7 @@
 .idea/
 client_secret.json
 headers_auth.json
+access_token.txt
 *.log
+headers_raw.txt
+*.pyc
